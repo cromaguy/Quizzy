@@ -16,12 +16,6 @@
 ✅ Fully **Responsive & Mobile-Friendly**  
 
 
-## 🎬 **Preview**
-![Quiz App Preview](https://your-image-or-gif-link-here.gif)
-
-🔗 **[Live Demo](https://your-live-demo-link-here.com/)**
-
-
 ## 🛠️ **Tech Stack**
 - **HTML5** - Structure  
 - **CSS3** - Styling & Animations  
