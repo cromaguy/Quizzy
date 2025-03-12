@@ -1,9 +1,5 @@
 # 🎯 Interactive Quiz App
 
-![GitHub stars](https://img.shields.io/github/stars/Quizzy?style=social)
-![GitHub forks](https://img.shields.io/github/forks/Quizzy?style=social)
-![GitHub last commit](https://img.shields.io/github/last-commit/Quizzy)
-![GitHub license](https://img.shields.io/github/license/Quizzy)
 
 🌐 **Website:** [Quizzy](https://cromaguy.github.io/Quizzy/)
 
