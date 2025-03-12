@@ -1,7 +1,7 @@
 # 🎯 Interactive Quiz App
 
-
 🌐 **Website:** [Quizzy](https://cromaguy.github.io/Quizzy/)
+
 Developed with ❤️ for **KIIT UNIVERSITY** as part of my Web Tech Intership Project. Licensed under the MIT License.
 
 
