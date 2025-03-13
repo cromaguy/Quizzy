@@ -201,8 +201,20 @@ button:active {
 
 /* Media Queries for Responsiveness */
 @media (max-width: 480px) {
+    .body {
+        overflow: hidden;
+    }
+
+    .start-screen {
+        min-width: 60%;
+    }
+
     .quiz-container {
         padding: 20px;
+    }
+
+    h1 {
+        font-size: larger;
     }
 
     h2 {
