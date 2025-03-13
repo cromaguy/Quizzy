@@ -1,16 +1,34 @@
 let currentQuestion = 0;
 let score = 0;
-let answered = false; // Flag to track if an answer has been selected
+let answered = false;
+let selectedAnswers = new Array(10).fill(null); // Store selected answers
+let scoredQuestions = new Set(); // Track which questions have been scored
+
 const questions = [
     {
-        question: "What is the capital of France?",
-        answers: ["Berlin", "Paris", "London", "Rome"],
-        correctAnswer: 1
+        question: "Who is replacing Justin Trudeau as leader of the Liberal party in Canada?",
+        answers: ["François-Philippe Champagne", "Chrystia Freeland", "Mark Carney", "Melanie Joly"],
+        correctAnswer: 0
     },
     {
-        question: "What is the largest planet in our solar system?",
-        answers: ["Earth", "Saturn", "Jupiter", "Uranus"],
-        correctAnswer: 2
+        question: "Which country will host the FIFA World Cup in 2026?",
+        answers: ["United States, Canada, and Mexico", "Germany", "India", "Australia"],
+        correctAnswer: 0
+    },
+    {
+        question: "What is the capital of Guatemala?",
+        answers: ["Guatemala City", "Antigua", "Quetzaltenango", "Escuintla"],
+        correctAnswer: 0
+    },
+    {
+        question: "Which planet is known as the Red Planet?",
+        answers: ["Mars", "Venus", "Jupiter", "Saturn"],
+        correctAnswer: 0
+    },
+    {
+        question: "What is the chemical symbol for Gold?",
+        answers: ["Au", "Ag", "Go", "Gd"],
+        correctAnswer: 0
     },
     {
         question: "Who painted the Mona Lisa?",
@@ -18,38 +36,23 @@ const questions = [
         correctAnswer: 0
     },
     {
-        question: "Which is the most spoken language in the world (2025)?",
-        answers: ["English", "Mandarin Chinese", "Spanish", "Hindi"],
-        correctAnswer: 1
-    },
-    {
-        question: "What is the latest iPhone model released in 2025?",
-        answers: ["iPhone 14", "iPhone 15", "iPhone 16", "iPhone 17"],
-        correctAnswer: 2
-    },
-    {
-        question: "Which country will host the FIFA World Cup 2026?",
-        answers: ["United States, Canada, Mexico", "Germany", "India", "Australia"],
+        question: "What is the largest planet in our solar system?",
+        answers: ["Jupiter", "Saturn", "Earth", "Uranus"],
         correctAnswer: 0
     },
     {
-        question: "What is the speed of light in vacuum?",
-        answers: ["299,792 km/s", "150,000 km/s", "1,000 km/s", "3,000 km/s"],
+        question: "Which country is known as the Land of the Rising Sun?",
+        answers: ["Japan", "China", "South Korea", "Thailand"],
         correctAnswer: 0
     },
     {
-        question: "Which tech company developed ChatGPT?",
-        answers: ["Google", "Microsoft", "OpenAI", "Apple"],
-        correctAnswer: 2
+        question: "What is the smallest prime number?",
+        answers: ["2", "1", "3", "5"],
+        correctAnswer: 0
     },
     {
-        question: "What is the chemical symbol for Gold?",
-        answers: ["Go", "Gd", "Au", "Ag"],
-        correctAnswer: 2
-    },
-    {
-        question: "Which planet is known as the Red Planet?",
-        answers: ["Mars", "Venus", "Saturn", "Neptune"],
+        question: "Which element has the chemical symbol 'O'?",
+        answers: ["Oxygen", "Gold", "Silver", "Osmium"],
         correctAnswer: 0
     }
 ];
@@ -72,13 +75,12 @@ startBtn.addEventListener("click", () => {
     setTimeout(() => {
         startScreen.style.display = "none";
         quizContainer.style.display = "block";
+        loadQuestion(); // Load the first question only after showing the quiz
     }, 500);
-    loadQuestion();
 });
 
-// Load Question & Update UI
 function loadQuestion() {
-    answered = false;
+    answered = selectedAnswers[currentQuestion] !== null; // If already answered, allow proceeding
     questionElement.innerText = questions[currentQuestion].question;
     answersElement.innerHTML = '';
 
@@ -89,14 +91,16 @@ function loadQuestion() {
         radio.value = index;
         radio.id = `answer-${index}`;
 
+        if (selectedAnswers[currentQuestion] === index) {
+            radio.checked = true; // Restore previous selection
+        }
+
         const label = document.createElement('label');
         label.htmlFor = `answer-${index}`;
         label.innerText = answer;
 
-        label.addEventListener('click', () => {
-            if (!answered) {
-                markAnswer(index);
-            }
+        radio.addEventListener('change', () => {
+            markAnswer(index);
         });
 
         answersElement.appendChild(radio);
@@ -115,55 +119,36 @@ prevBtn.addEventListener("click", () => {
     }
 });
 
-
 function markAnswer(selectedIndex) {
-    answered = true; // Set the answered flag
-
-    // Style the selected answer
-    const labels = answersElement.querySelectorAll('label');
-    labels.forEach((label, index) => {
-        if (index == selectedIndex) {
-            label.classList.add('selected'); // Add a class to style the selected label
-        }
-    });
-
-    // Disable further clicks
-    disableAnswers();
+    answered = true;
+    selectedAnswers[currentQuestion] = selectedIndex;
 }
 
-function disableAnswers() {
-    const labels = answersElement.querySelectorAll('label');
-    labels.forEach(label => {
-        label.style.pointerEvents = 'none'; // Disable click events
-    });
-}
-
+// Validate answer before proceeding
 function checkAnswer() {
     if (!answered) {
         alert("Please select an answer.");
         return false;
     }
 
-    const selectedAnswer = document.querySelector('input[name="answer"]:checked');
-    if (!selectedAnswer) return false;
-
-    const answerIndex = parseInt(selectedAnswer.value);
+    const selectedAnswer = selectedAnswers[currentQuestion];
 
     // Apply correct/incorrect styling
     const labels = answersElement.querySelectorAll('label');
     labels.forEach((label, index) => {
-        if (index == questions[currentQuestion].correctAnswer) {
+        if (index === questions[currentQuestion].correctAnswer) {
             label.classList.add('correct-answer');
-        } else if (index == answerIndex) {
+        } else if (index === selectedAnswer) {
             label.classList.add('incorrect-answer');
         }
     });
 
-    if (answerIndex == questions[currentQuestion].correctAnswer) {
+    // Score only if first time answering this question
+    if (!scoredQuestions.has(currentQuestion) && selectedAnswer === questions[currentQuestion].correctAnswer) {
         score++;
+        scoredQuestions.add(currentQuestion);
     }
 
-    // Delay for a short time before loading the next question
     setTimeout(() => {
         nextQuestion();
     }, 1500);
@@ -172,13 +157,6 @@ function checkAnswer() {
 }
 
 function nextQuestion() {
-    // Remove correct/incorrect styling
-    const labels = answersElement.querySelectorAll('label');
-    labels.forEach(label => {
-        label.classList.remove('correct-answer', 'incorrect-answer', 'selected');
-        label.style.pointerEvents = 'auto'; // Re-enable click events
-    });
-
     currentQuestion++;
 
     if (currentQuestion >= questions.length) {
@@ -216,25 +194,13 @@ function displayResult() {
 
 // Restart Quiz Function
 restartBtn.addEventListener("click", () => {
-    // currentQuestion = 0;
-    // score = 0;
-    // resultElement.innerText = "";
-    // restartBtn.style.display = "none";
-    // submitBtn.style.display = "block";
-    // progressBar.style.display = "block";
-    // loadQuestion();
     window.location.reload();
 });
 
-
 function updateProgressBar() {
-    const progress = ((currentQuestion + 1) / questions.length) * 100; // Proper dynamic progress
+    const progress = ((currentQuestion + 1) / questions.length) * 100;
     progressBar.style.width = `${progress}%`;
 }
 
 // Event listener to check the answer
 submitBtn.addEventListener('click', checkAnswer);
-
-// Load the first question when the quiz starts
-loadQuestion();
-
