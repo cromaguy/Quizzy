@@ -5,10 +5,6 @@
 Developed with ❤️ for **KIIT UNIVERSITY** as part of my Web Tech Intership Project. Licensed under the MIT License.
 
 
-## 📌 About
-🚀 A **modern, responsive, and interactive quiz game** built with **HTML, CSS, and JavaScript**. Features **smooth animations**, **dynamic progress tracking**, and a **stylish UI**.
-
-
 ### ✨ **Key Features**
 ✅ Start screen with **KIIT University Logo**  
 ✅ **Previous Question & Restart Quiz** functionality  
