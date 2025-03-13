@@ -1,12 +1,12 @@
 # 🎯 Interactive Quiz App
 
-🌐 **Website:** [Quizzy](https://cromaguy.github.io/Quizzy/)
+🌐 **Website:** [Quizzy](https://quizzy-dusky.vercel.app/)
 
 Developed with ❤️ for **KIIT UNIVERSITY** as part of my Web Tech Intership Project. Licensed under the MIT License.
 
 
 ## 📌 About
-🚀 A **modern, responsive, and interactive quiz application** built with **HTML, CSS, and JavaScript**. Features **smooth animations**, **dynamic progress tracking**, and a **stylish UI**.
+🚀 A **modern, responsive, and interactive quiz game** built with **HTML, CSS, and JavaScript**. Features **smooth animations**, **dynamic progress tracking**, and a **stylish UI**.
 
 
 ### ✨ **Key Features**
