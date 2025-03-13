@@ -7,18 +7,18 @@ let scoredQuestions = new Set(); // Track which questions have been scored
 const questions = [
     {
         question: "Who is replacing Justin Trudeau as leader of the Liberal party in Canada?",
-        answers: ["François-Philippe Champagne", "Chrystia Freeland", "Mark Carney", "Melanie Joly"],
-        correctAnswer: 0
+        answers: ["Mark Carney", "François-Philippe Champagne", "Chrystia Freeland", "Melanie Joly"],
+        correctAnswer: 1
     },
     {
         question: "Which country will host the FIFA World Cup in 2026?",
-        answers: ["United States, Canada, and Mexico", "Germany", "India", "Australia"],
-        correctAnswer: 0
+        answers: ["Germany", "India", "Australia", "United States, Canada, and Mexico"],
+        correctAnswer: 3
     },
     {
         question: "What is the capital of Guatemala?",
-        answers: ["Guatemala City", "Antigua", "Quetzaltenango", "Escuintla"],
-        correctAnswer: 0
+        answers: ["Antigua", "Quetzaltenango", "Guatemala City", "Escuintla"],
+        correctAnswer: 2
     },
     {
         question: "Which planet is known as the Red Planet?",
@@ -27,23 +27,23 @@ const questions = [
     },
     {
         question: "What is the chemical symbol for Gold?",
-        answers: ["Au", "Ag", "Go", "Gd"],
-        correctAnswer: 0
+        answers: ["Ag", "Au", "Go", "Gd"],
+        correctAnswer: 1
     },
     {
         question: "Who painted the Mona Lisa?",
-        answers: ["Leonardo da Vinci", "Michelangelo", "Raphael", "Caravaggio"],
-        correctAnswer: 0
+        answers: ["Michelangelo", "Raphael", "Leonardo da Vinci", "Caravaggio"],
+        correctAnswer: 2
     },
     {
         question: "What is the largest planet in our solar system?",
-        answers: ["Jupiter", "Saturn", "Earth", "Uranus"],
-        correctAnswer: 0
+        answers: ["Saturn", "Earth", "Uranus", "Jupiter"],
+        correctAnswer: 3
     },
     {
         question: "Which country is known as the Land of the Rising Sun?",
-        answers: ["Japan", "China", "South Korea", "Thailand"],
-        correctAnswer: 0
+        answers: ["China", "South Korea", "Thailand", "Japan"],
+        correctAnswer: 3
     },
     {
         question: "What is the smallest prime number?",
@@ -52,8 +52,8 @@ const questions = [
     },
     {
         question: "Which element has the chemical symbol 'O'?",
-        answers: ["Oxygen", "Gold", "Silver", "Osmium"],
-        correctAnswer: 0
+        answers: ["Gold", "Silver", "Oxygen", "Osmium"],
+        correctAnswer: 2
     }
 ];
 
