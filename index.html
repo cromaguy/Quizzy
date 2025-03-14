@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quizzy 1.5</title>
+    <title>Quizzy 2.0</title>
     <link rel="shortcut icon" href="https://event.kiit.ac.in/wp-content/uploads/2021/11/KIIT-Logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,30 +13,121 @@
 </head>
 
 <body>
-
     <!-- Start Screen -->
     <div id="start-screen" class="start-screen">
         <img src="https://mindlerimages.imgix.net/tinyimg/Kit.png" alt="KIIT Logo" class="kiit-logo">
-        <h1>Welcome to Quizzy!</h1>
-        <h>By Anjishnu Nandi</h>
-        <button id="start-btn">Start Quiz</button>
+        <h1>Welcome to Quizzy 2.0</h1>
+        <p class="subtitle">Test your knowledge with our interactive quiz!</p>
+        <p class="created-by">By Anjishnu Nandi</p>
+        
+        <div class="difficulty-selector">
+            <p>Select Difficulty:</p>
+            <div class="difficulty-options">
+                <button class="difficulty-btn" data-difficulty="easy">Easy</button>
+                <button class="difficulty-btn active" data-difficulty="medium">Medium</button>
+                <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+            </div>
+        </div>
+        
+        <div class="time-selector">
+            <p>Time per Question:</p>
+            <div class="time-options">
+                <button class="time-btn" data-time="10">10s</button>
+                <button class="time-btn active" data-time="20">20s</button>
+                <button class="time-btn" data-time="30">30s</button>
+                <button class="time-btn" data-time="0">No Limit</button>
+            </div>
+        </div>
+        
+        <button id="start-btn" class="pulse-btn">Start Quiz</button>
     </div>
 
     <!-- Quiz Container (Initially Hidden) -->
     <div id="quiz-container" class="quiz-container" style="display: none;">
-        <div class="progress-bar-container">
-            <div class="progress-bar" id="progress-bar"></div>
+        <div class="quiz-header">
+            <div class="quiz-info">
+                <span id="question-number">Question 1/10</span>
+                <div id="timer-container">
+                    <span id="timer-icon">⏱️</span>
+                    <span id="timer">20</span>s
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
         </div>
+        
         <h2 id="question"></h2>
         <div id="answers" class="answers-grid"></div>
+        
         <div class="button-container">
-            <button id="prev-btn" style="display: none;">Previous Question</button>
-            <button id="submit-btn">Next Question</button>
+            <button id="prev-btn" style="display: none;">Previous</button>
+            <button id="hint-btn">Hint</button>
+            <button id="submit-btn">Next</button>
         </div>
+        
         <div id="result" class="result-message"></div>
-        <button id="restart-btn" style="display: none;">Restart Quiz</button>
+        <div id="hint-box" class="hint-box" style="display: none;"></div>
     </div>
 
+    <!-- Results Screen -->
+    <div id="results-screen" class="results-screen" style="display: none;">
+        <h2>Quiz Completed!</h2>
+        <div class="score-container">
+            <div class="score-circle">
+                <span id="final-score">0</span>
+                <span id="total-questions">/10</span>
+            </div>
+        </div>
+        
+        <div class="performance-summary">
+            <div class="stat-box">
+                <span class="stat-icon">⏱️</span>
+                <span class="stat-value" id="avg-time">0s</span>
+                <span class="stat-label">Avg. Time</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-icon">🔥</span>
+                <span class="stat-value" id="streak">0</span>
+                <span class="stat-label">Max Streak</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-icon">🎯</span>
+                <span class="stat-value" id="accuracy">0%</span>
+                <span class="stat-label">Accuracy</span>
+            </div>
+        </div>
+        
+        <div class="result-message-container">
+            <p id="result-feedback"></p>
+        </div>
+        
+        <div class="action-buttons">
+            <button id="review-btn">Review Answers</button>
+            <button id="restart-btn">Play Again</button>
+            <button id="share-btn">Share Result</button>
+        </div>
+    </div>
+
+    <!-- Answer Review Screen -->
+    <div id="review-screen" class="review-screen" style="display: none;">
+        <h2>Review Your Answers</h2>
+        <div id="review-container"></div>
+        <button id="back-to-results">Back to Results</button>
+    </div>
+
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <span class="theme-icon" id="theme-icon">🌙</span>
+    </div>
+
+    <!-- Sound Toggle -->
+    <div class="sound-toggle">
+        <span class="sound-icon" id="sound-icon">🔊</span>
+    </div>
+
+    <!-- Confetti Canvas for Celebrations -->
+    <canvas id="confetti-canvas"></canvas>
 
     <script src="script.js"></script>
 </body>
