@@ -11,8 +11,7 @@
 
   <p>A sleek, interactive quiz application with modern UI elements, customizable settings, and enhanced user experience.</p>
 
-  🌐 **Live Demo:** [Quizzy 1.5 STABLE](https://quizzy-dusky.vercel.app/)
-  🌐 **Live Demo:** [Quizzy 2.0 BETA](https://cromaguy.github.io/Quizzy/)
+  🌐 **Live Demo:** [Quizzy 1.5 STABLE](https://quizzy-dusky.vercel.app/) [Quizzy 2.0 BETA](https://cromaguy.github.io/Quizzy/)
 </div>
 
 
