@@ -1,15 +1,16 @@
 let currentQuestion = 0;
 let score = 0;
 let answered = false;
-let selectedAnswers = new Array(10).fill(null); // Store selected answers
-let scoredQuestions = new Set(); // Track which questions have been scored
+let selectedAnswers = new Array(10).fill(null);
+let scoredQuestions = new Set();
 let timerInterval = null;
-let timeLeft = 20; // Default time per question
-let maxTimePerQuestion = 20; // Default value
-let timerActive = true; // Track if timer is active
-let questionStats = []; // Track stats for each question
+let timeLeft = 20;
+let maxTimePerQuestion = 20;
+let timerActive = true;
+let questionStats = [];
 let maxStreak = 0;
 let currentStreak = 0;
+
 
 // Theme and sound settings
 let isDarkMode = false;
@@ -166,11 +167,39 @@ soundToggle.addEventListener('click', () => {
 function playSound(type) {
     if (!soundEnabled) return;
 
-    // Sound effects could be implemented here
-    // For example: new Audio('correct.mp3').play();
-    console.log(`Playing sound: ${type}`);
+    let sound;
+    switch (type) {
+        case 'correct':
+            sound = new Audio('sounds/correct.mp3');
+            break;
+        case 'incorrect':
+            sound = new Audio('sounds/incorrect.mp3');
+            break;
+        case 'click':
+            sound = new Audio('sounds/click.mp3');
+            break;
+        case 'start':
+            sound = new Audio('sounds/start.mp3');
+            break;
+        case 'switch':
+            sound = new Audio('sounds/switch.mp3');
+            break;
+        case 'share':
+            sound = new Audio('sounds/share.mp3');
+            break;
+        default:
+            sound = new Audio('sounds/click.mp3');
+    }
+
+    // Using try-catch to handle potential errors
+    try {
+        sound.play();
+    } catch (error) {
+        console.log('Audio play failed:', error);
+    }
 }
 
+// Start Quiz - Hide Start Screen & Show Quiz
 // Start Quiz - Hide Start Screen & Show Quiz
 startBtn.addEventListener("click", () => {
     startScreen.style.opacity = "0"; // Smooth fade-out
@@ -201,14 +230,28 @@ startBtn.addEventListener("click", () => {
 });
 
 function loadQuestion() {
+    // Clear any previous timer
+    clearInterval(timerInterval);
+
     // Reset timer if active
     if (timerActive) {
-        clearInterval(timerInterval);
         timeLeft = maxTimePerQuestion;
         timerDisplay.textContent = timeLeft;
+        timerDisplay.style.color = ''; // Reset color
+        timerContainer.style.display = 'flex';
         startTimer();
     } else {
         timerContainer.style.display = 'none';
+    }
+
+    // Initialize stats for this question if they don't exist yet
+    if (!questionStats[currentQuestion]) {
+        questionStats[currentQuestion] = {
+            questionIndex: currentQuestion,
+            timeSpent: 0,
+            correct: false,
+            selectedAnswer: null
+        };
     }
 
     answered = selectedAnswers[currentQuestion] !== null; // If already answered
@@ -228,6 +271,7 @@ function loadQuestion() {
         radio.name = 'answer';
         radio.value = index;
         radio.id = `answer-${index}`;
+        radio.disabled = answered; // Disable if already answered
 
         if (selectedAnswers[currentQuestion] === index) {
             radio.checked = true; // Restore previous selection
@@ -250,22 +294,29 @@ function loadQuestion() {
             markAnswer(index);
         });
 
-        answersElement.appendChild(radio);
-        answersElement.appendChild(label);
+        answerContainer.appendChild(radio);
+        answerContainer.appendChild(label);
+        answersElement.appendChild(answerContainer);
     });
 
     // Update button states
     prevBtn.style.display = currentQuestion > 0 ? "inline-block" : "none";
     submitBtn.textContent = currentQuestion === questions.length - 1 ? "Finish" : "Next";
 
-    // Hide hint box
-    hintBox.style.display = 'none';
+    // Update submit button based on answered state
+    if (answered) {
+        submitBtn.textContent = currentQuestion === questions.length - 1 ? "Finish" : "Next";
+    } else {
+        submitBtn.textContent = "Submit";
+    }
 
-    // Reset result message
+    // Hide hint box and result message
+    hintBox.style.display = 'none';
     resultElement.style.display = 'none';
 
     updateProgressBar();
 }
+
 
 // Timer functionality
 function startTimer() {
@@ -313,30 +364,39 @@ hintBtn.addEventListener("click", () => {
 });
 
 // Validate answer before proceeding
-// Fix for the checkAnswer function to properly update score
 function checkAnswer(timeExpired = false) {
     if (!answered && !timeExpired) {
-        alert("Please select an answer.");
-        return false;
+        // Check if an answer is selected
+        const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+        if (!selectedAnswer) {
+            alert("Please select an answer.");
+            return false;
+        }
+        // Mark the answer as selected
+        markAnswer(parseInt(selectedAnswer.value));
     }
 
-    clearInterval(timerInterval); // Stop the timer
-
+    clearInterval(timerInterval);
     const selectedAnswer = selectedAnswers[currentQuestion];
     const correctAnswer = questions[currentQuestion].correctAnswer;
-
-    // Record stats for this question
     const timeSpent = maxTimePerQuestion - timeLeft;
 
-    // If time expired and no answer selected, mark as incorrect
     if (timeExpired && selectedAnswer === null) {
-        selectedAnswers[currentQuestion] = -1; // Special value for time expired
+        selectedAnswers[currentQuestion] = -1;
     }
 
-    // Track if answer is correct
     const isCorrect = selectedAnswer === correctAnswer;
 
-    // Update streak counter
+    // Update UI to show correct/incorrect
+    const labels = document.querySelectorAll('.answers-grid label');
+    labels.forEach((label, index) => {
+        if (index === correctAnswer) {
+            label.classList.add('correct-answer');
+        } else if (index === selectedAnswer && selectedAnswer !== correctAnswer) {
+            label.classList.add('incorrect-answer');
+        }
+    });
+
     if (isCorrect) {
         currentStreak++;
         maxStreak = Math.max(maxStreak, currentStreak);
@@ -346,76 +406,57 @@ function checkAnswer(timeExpired = false) {
         playSound('incorrect');
     }
 
-    // Save question stats
-    questionStats.push({
+    // Ensure questionStats is initialized for this question
+    if (!questionStats[currentQuestion]) {
+        questionStats[currentQuestion] = {
+            questionIndex: currentQuestion,
+            timeSpent: 0,
+            correct: false,
+            selectedAnswer: null
+        };
+    }
+
+    // Record stats for this question
+    questionStats[currentQuestion] = {
         questionIndex: currentQuestion,
         timeSpent: timeSpent,
         correct: isCorrect,
         selectedAnswer: selectedAnswer
-    });
+    };
 
-    // Apply correct/incorrect styling
-    const labels = answersElement.querySelectorAll('label');
-    labels.forEach((label, index) => {
-        if (index === correctAnswer) {
-            label.classList.add('correct-answer');
-        } else if (index === selectedAnswer) {
-            label.classList.add('incorrect-answer');
-        }
-    });
-
-    // Fix: Score only if first time answering this question AND if the answer is correct
+    // In the checkAnswer function
     if (!scoredQuestions.has(currentQuestion)) {
         if (isCorrect) {
             score++;
+            console.log(`Question ${currentQuestion + 1} correct! Score increased to ${score}`);
+        } else {
+            console.log(`Question ${currentQuestion + 1} incorrect. Score remains ${score}`);
         }
         scoredQuestions.add(currentQuestion);
     }
 
-    // Show feedback
-    resultElement.innerHTML = '';
-    let icon = document.createElement("span");
-    icon.classList.add("icon");
-
+    // Display result message
+    resultElement.style.display = 'flex';
     if (isCorrect) {
-        icon.innerHTML = "✓";
-        icon.classList.add("correct-icon");
-        resultElement.innerText = "Correct!";
-    } else if (timeExpired) {
-        icon.innerHTML = "⏱️";
-        icon.classList.add("incorrect-icon");
-        resultElement.innerText = "Time's up!";
+        resultElement.innerHTML = `<span class="icon correct-icon">✓</span> Correct!`;
+        resultElement.style.color = 'var(--correct-color)';
     } else {
-        icon.innerHTML = "✗";
-        icon.classList.add("incorrect-icon");
-        resultElement.innerText = "Incorrect!";
+        resultElement.innerHTML = `<span class="icon incorrect-icon">✗</span> Incorrect!`;
+        resultElement.style.color = 'var(--incorrect-color)';
     }
 
-    resultElement.appendChild(icon);
-    resultElement.style.display = 'flex';
-
     // Disable answer selection after answering
-    const radioButtons = answersElement.querySelectorAll('input[type="radio"]');
-    radioButtons.forEach(radio => {
-        radio.disabled = true;
+    const radioInputs = document.querySelectorAll('input[type="radio"]');
+    radioInputs.forEach(input => {
+        input.disabled = true;
     });
 
-    // Auto proceed after delay
+    // Define the next question functionality
     setTimeout(() => {
         nextQuestion();
     }, 1500);
 
     return true;
-}
-
-function nextQuestion() {
-    currentQuestion++;
-
-    if (currentQuestion >= questions.length) {
-        displayResults();
-    } else {
-        loadQuestion();
-    }
 }
 
 // Display Result Screen with detailed stats
@@ -424,45 +465,86 @@ function displayResults() {
     quizContainer.style.display = 'none';
     resultsScreen.style.display = 'block';
 
-    // Calculate stats
-    const attemptedQuestions = questionStats.length;
-    const correctAnswers = questionStats.filter(q => q.correct).length;
-    const accuracy = attemptedQuestions > 0 ? (correctAnswers / attemptedQuestions) * 100 : 0;
-    const totalTimeSpent = questionStats.reduce((sum, q) => sum + q.timeSpent, 0);
-    const avgTime = attemptedQuestions > 0 ? Math.round(totalTimeSpent / attemptedQuestions) : 0;
-
-    // Fix: Update final score display with the actual score
-    finalScoreDisplay.textContent = score;
+    // Calculate score directly from selectedAnswers
+    let calculatedScore = 0;
+    let attemptedQuestions = 0;
+    
+    // Calculate stats directly from the data we have
+    for (let i = 0; i < questions.length; i++) {
+        // Count attempted questions (where user selected an answer)
+        if (selectedAnswers[i] !== null && selectedAnswers[i] !== -1) {
+            attemptedQuestions++;
+            
+            // Count correct answers
+            if (selectedAnswers[i] === questions[i].correctAnswer) {
+                calculatedScore++;
+            }
+        }
+    }
+    
+    // Calculate accuracy
+    const accuracy = attemptedQuestions > 0 ? (calculatedScore / attemptedQuestions) * 100 : 0;
+    
+    // Calculate average time (if we have time data in questionStats)
+    let totalTimeSpent = 0;
+    let validTimeEntries = 0;
+    
+    for (let i = 0; i < questionStats.length; i++) {
+        if (questionStats[i] && questionStats[i].timeSpent && questionStats[i].timeSpent > 0) {
+            totalTimeSpent += questionStats[i].timeSpent;
+            validTimeEntries++;
+        }
+    }
+    
+    const avgTime = validTimeEntries > 0 ? Math.round(totalTimeSpent / validTimeEntries) : 0;
+    
+    // Update UI elements with our calculated values
+    finalScoreDisplay.textContent = calculatedScore;
     avgTimeDisplay.textContent = `${avgTime}s`;
-    streakDisplay.textContent = maxStreak;
+    streakDisplay.textContent = maxStreak; // This should be tracked correctly in the existing code
     accuracyDisplay.textContent = `${Math.round(accuracy)}%`;
 
-    // Generate feedback message
+    // Show appropriate feedback based on calculatedScore
     let feedback = "";
-    if (score >= 9) {
+    if (calculatedScore >= 9) {
         feedback = "Outstanding! You're a quiz master! 🏆";
-        playSound('excellent');
-    } else if (score >= 7) {
+        showConfetti();
+    } else if (calculatedScore >= 7) {
         feedback = "Great job! Your knowledge is impressive! 🌟";
-        playSound('great');
-    } else if (score >= 5) {
+    } else if (calculatedScore >= 5) {
         feedback = "Good effort! Keep learning and improving! 📚";
-        playSound('good');
-    } else if (score >= 3) {
-        feedback = "Not bad! You're making progress. Keep it up! 👍";
-        playSound('okay');
+    } else if (calculatedScore >= 3) {
+        feedback = "Not bad! Keep trying! 👍";
     } else {
-        feedback = "You can do better! Try again to improve your score. 💪";
-        playSound('try-again');
+        feedback = "You can do better! Try again! 💪";
+    }
+    resultFeedback.textContent = feedback;
+}
+
+function nextQuestion() {
+    // Reset result display
+    resultElement.style.display = 'none';
+
+    // Check if this was the last question
+    if (currentQuestion === questions.length - 1) {
+        // If it was the last question, show results screen
+        console.log("Final score before display: " + score); // Add this debug line
+        displayResults();
+    } else {
+        // If not, move to the next question
+        currentQuestion++;
+        loadQuestion();
     }
 
-    resultFeedback.textContent = feedback;
-
-    // Show confetti for good scores
-    if (score >= 7) {
-        showConfetti();
+    // Update button text based on new state
+    if (currentQuestion === questions.length - 1) {
+        submitBtn.textContent = "Finish";
+    } else {
+        submitBtn.textContent = "Submit";
     }
 }
+
+
 // Review Answers
 reviewBtn.addEventListener("click", () => {
     resultsScreen.style.display = 'none';
@@ -515,15 +597,22 @@ reviewBtn.addEventListener("click", () => {
 
         reviewItem.appendChild(optionsContainer);
 
-        // Question stats
-        const questionStat = questionStats.find(stat => stat.questionIndex === index);
-        if (questionStat) {
-            const statInfo = document.createElement('div');
-            statInfo.className = 'review-stats';
-            statInfo.innerHTML = `<small>Time taken: ${questionStat.timeSpent}s | ${questionStat.correct ? 'Correct' : 'Incorrect'}</small>`;
-            reviewItem.appendChild(statInfo);
+        // Question stats - safely access stats even if missing
+        const statInfo = document.createElement('div');
+        statInfo.className = 'review-stats';
+        
+        // Check if we have stats for this question
+        if (questionStats[index]) {
+            const timeSpent = questionStats[index].timeSpent || 0;
+            const isCorrect = selectedAnswers[index] === q.correctAnswer;
+            statInfo.innerHTML = `<small>Time taken: ${timeSpent}s | ${isCorrect ? 'Correct' : 'Incorrect'}</small>`;
+        } else {
+            // Default text if no stats available
+            const isCorrect = selectedAnswers[index] === q.correctAnswer;
+            statInfo.innerHTML = `<small>Time taken: -- | ${isCorrect ? 'Correct' : 'Incorrect'}</small>`;
         }
-
+        
+        reviewItem.appendChild(statInfo);
         reviewContainer.appendChild(reviewItem);
     });
 
@@ -555,9 +644,13 @@ restartBtn.addEventListener("click", () => {
 });
 
 // Share Results
+// Share Results
 shareBtn.addEventListener("click", () => {
-    // Create shareable text
-    const shareText = `I scored ${score}/10 on Quizzy 2.0! My accuracy was ${document.getElementById('accuracy').textContent} with a max streak of ${maxStreak}. Can you beat my score?`;
+    // Get the score directly from the UI element instead of using the score variable
+    const currentScore = document.getElementById('final-score').textContent;
+    
+    // Create shareable text using the displayed score
+    const shareText = `I scored ${currentScore}/10 on Quizzy 2.0! My accuracy was ${document.getElementById('accuracy').textContent} with a max streak of ${maxStreak}. Can you beat my score?`;
 
     // Check if Web Share API is available
     if (navigator.share) {
@@ -565,28 +658,39 @@ shareBtn.addEventListener("click", () => {
             title: 'My Quiz Results',
             text: shareText,
         })
-            .catch(error => console.log('Error sharing:', error));
+            .catch(error => {
+                console.log('Error sharing:', error);
+                copyToClipboard(shareText);
+            });
     } else {
         // Fallback: Copy to clipboard
-        navigator.clipboard.writeText(shareText)
-            .then(() => {
-                alert('Result copied to clipboard! Share it with your friends.');
-            })
-            .catch(err => {
-                console.error('Failed to copy: ', err);
-            });
+        copyToClipboard(shareText);
     }
 
     playSound('share');
 });
+function copyToClipboard(text) {
+    // Create a temporary input element
+    const tempInput = document.createElement('textarea');
+    tempInput.value = text;
+    document.body.appendChild(tempInput);
+
+    // Select and copy the text
+    tempInput.select();
+    document.execCommand('copy');
+
+    // Remove the temporary element
+    document.body.removeChild(tempInput);
+
+    // Notify the user
+    alert('Result copied to clipboard! Share it with your friends.');
+}
 
 // Submit Answer / Next Question
 submitBtn.addEventListener("click", () => {
-    // If not answered, check the answer first
     if (!answered) {
-        if (checkAnswer()) {
-            // Will automatically go to next question after delay
-        }
+        // If not answered yet, check the answer
+        checkAnswer();
     } else {
         // If already answered, go to next question immediately
         nextQuestion();
