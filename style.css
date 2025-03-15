@@ -97,6 +97,16 @@ body.dark-mode {
     transition: all 0.5s ease;
 }
 
+.badge {
+    font-size: 0.5em;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    vertical-align: middle;
+    -webkit-text-fill-color: white;
+}
+
 #start-btn::after {
     content: '';
     position: absolute;
@@ -227,6 +237,8 @@ body.dark-mode {
 .time-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background-color: var(--bg-light);
+    color: var(--text-primary);
 }
 
 .difficulty-btn.active,
