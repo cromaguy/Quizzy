@@ -29,6 +29,11 @@
     --dark-bg: #121212;
     --dark-card-bg: rgba(40, 40, 40, 0.8);
     --dark-text: #e0e0e0;
+
+    --primary-rgb: 83, 109, 254;
+    --primary-light: #758afd;
+    --primary-dark: #3f51b5;
+    --bg-card: rgba(255, 255, 255, 0.08);
 }
 
 * {
@@ -90,6 +95,22 @@ body.dark-mode {
     opacity: 0;
     animation: fadeIn 1.5s ease-in-out forwards;
     transition: all 0.5s ease;
+}
+
+#start-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 20%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(30deg);
+    transition: all 0.6s ease;
+}
+
+#start-btn:hover::after {
+    left: 120%;
 }
 
 @keyframes fadeIn {
@@ -161,39 +182,84 @@ body.dark-mode {
 .difficulty-selector,
 .time-selector {
     margin: 20px 0;
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.difficulty-selector p,
+.time-selector p {
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+    font-size: 1.1rem;
 }
 
 .difficulty-options,
 .time-options {
     display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
     flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
 }
 
+/* Button styling */
 .difficulty-btn,
 .time-btn {
-    padding: 8px 16px;
-    border-radius: 30px;
-    border: 2px solid var(--primary-color);
-    background: transparent;
-    color: var(--primary-color);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+    font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
+    min-width: 80px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .difficulty-btn:hover,
 .time-btn:hover {
-    background: rgba(0, 136, 255, 0.1);
     transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .difficulty-btn.active,
 .time-btn.active {
-    background: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
     color: white;
+    box-shadow: 0 4px 10px rgba(var(--primary-rgb), 0.4);
+}
+
+/* Create a subtle background effect for active buttons */
+.difficulty-btn.active::before,
+.time-btn.active::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+    z-index: -1;
+}
+
+body.dark-mode .difficulty-selector,
+body.dark-mode .time-selector {
+    background-color: rgba(30, 30, 40, 0.6);
+}
+
+body.dark-mode .difficulty-btn:not(.active),
+body.dark-mode .time-btn:not(.active) {
+    background-color: rgba(50, 50, 60, 0.8);
+    color: #e0e0e0;
 }
 
 /* Quiz Container */
@@ -241,12 +307,19 @@ body.dark-mode {
 }
 
 @keyframes pulse {
-    from {
+    0% {
+        transform: scale(0.95);
         opacity: 0.7;
     }
 
-    to {
+    50% {
+        transform: scale(1);
         opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.95);
+        opacity: 0.7;
     }
 }
 
@@ -853,6 +926,16 @@ button:active {
     }
 }
 
+@media (max-width: 360px) {
+
+    .difficulty-btn,
+    .time-btn {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
+}
+
+
 @media (max-width: 480px) {
 
     .start-screen,
@@ -915,6 +998,27 @@ button:active {
     .theme-icon,
     .sound-icon {
         font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .difficulty-options,
+    .time-options {
+        flex-direction: row;
+    }
+
+    .difficulty-btn,
+    .time-btn {
+        flex: 1;
+        min-width: auto;
+        font-size: 0.9rem;
+        padding: 8px 10px;
+    }
+
+    #start-btn {
+        padding: 12px 30px;
+        font-size: 1.1rem;
     }
 }
 

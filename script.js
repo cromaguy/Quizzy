@@ -771,3 +771,92 @@ function showConfetti() {
 document.addEventListener('DOMContentLoaded', () => {
     startScreen.style.opacity = "1";
 });
+
+// Add these functions to your script.js file
+
+// Enhanced button click feedback
+function enhanceButtonInteractions() {
+    // Add ripple effect to buttons
+    const buttons = document.querySelectorAll('.difficulty-btn, .time-btn, #start-btn');
+    
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Create ripple element
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            this.appendChild(ripple);
+            
+            // Position the ripple
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            // Apply styles
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            
+            // Clean up
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+    
+    // Add hover audio feedback
+    buttons.forEach(button => {
+        button.addEventListener('mouseenter', () => {
+            if (soundEnabled) {
+                const hoverSound = new Audio('sounds/hover.mp3');
+                hoverSound.volume = 0.2;
+                hoverSound.play().catch(e => {
+                    // Silently fail if audio can't play
+                });
+            }
+        });
+    });
+}
+
+// Add tooltip functionality to difficulty buttons
+function addDifficultyTooltips() {
+    const easyBtn = document.querySelector('.difficulty-btn[data-difficulty="easy"]');
+    const mediumBtn = document.querySelector('.difficulty-btn[data-difficulty="medium"]');
+    const hardBtn = document.querySelector('.difficulty-btn[data-difficulty="hard"]');
+    
+    addTooltip(easyBtn, 'Basic questions for beginners');
+    addTooltip(mediumBtn, 'Balanced challenge for most players');
+    addTooltip(hardBtn, 'Challenging questions for experts');
+}
+
+function addTooltip(element, text) {
+    element.setAttribute('title', text);
+    // You could implement custom tooltips here if needed
+}
+
+// Call these functions when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    enhanceButtonInteractions();
+    addDifficultyTooltips();
+    
+    // Add additional ripple CSS
+    const style = document.createElement('style');
+    style.textContent = `
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.4);
+        transform: scale(0);
+        animation: ripple 0.6s linear;
+        pointer-events: none;
+    }
+    
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    `;
+    document.head.appendChild(style);
+});
