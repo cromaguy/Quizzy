@@ -3,6 +3,8 @@
 <div align="center">
   
   ![Version](https://img.shields.io/badge/version-2.0-blue)
+  [![Live Demo](https://img.shields.io/badge/demo-1.5-green.svg)](https://quizzy-dusky.vercel.app/)
+  [![Live Demo](https://img.shields.io/badge/demo-2.0-green.svg)](https://cromaguy.github.io/Quizzy/)
   ![License](https://img.shields.io/badge/license-MIT-green)
   ![Status](https://img.shields.io/badge/status-active-brightgreen)
   ![Made for](https://img.shields.io/badge/made%20for-KIIT%20University-orange)
@@ -10,8 +12,8 @@
   <img src="https://raw.githubusercontent.com/gist/patevs/b007a0e98fb216438d4cbf559fac4166/raw/88f20c9d749d756be63f22b09f3c4ac570bc5101/terminal.gif" alt="Demo" width="600" />
 
   <p>A sleek, interactive quiz application with modern UI elements, customizable settings, and enhanced user experience.</p>
-
-  🌐 **Live Demo:** [Quizzy 1.5 STABLE](https://quizzy-dusky.vercel.app/) [Quizzy 2.0 BETA](https://cromaguy.github.io/Quizzy/)
+<!-- 
+  🌐 **Live Demo:** [Quizzy 1.5 STABLE](https://quizzy-dusky.vercel.app/) [Quizzy 2.0 BETA](https://cromaguy.github.io/Quizzy/) -->
 </div>
 
 
